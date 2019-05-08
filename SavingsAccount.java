@@ -1,55 +1,46 @@
-import java.util.Random;
-import java.util.*;
+import java.util.ArrayList;
 
-public class SavingsAccount
+public class SavingsAccount extends Account
 {
-  private double interestRate;
-  private String accNum;
-  private int amountOfMoney;
-  private ArrayList<Customer> o;
-  
+
+
   public SavingsAccount(String accNum)
   {
-    Random randomNum = new Random();
-    interestRate = randomNum.nextDouble();
-    
-    this.accNum = accNum;
+    super(accNum);
+
   }
-  
-  public String getAccountNumber()
-  {
-    return accNum;
-  }
-  
-  public void addCustomer(Customer o)
-  {
-    this.o.add(o);
-  }
-  
-  public void deposit(int money)
-  {
-    amountOfMoney += money;
-  }
-  
+
+
   public void withdraw(int money)
   {
-    amountOfMoney -= money;
+    try
+    {
+      if (amountOfMoney - money < 0)
+      {
+        throw new InsufficientFundsException("Not enough money!");
+      }
+      else if( money < 0)
+      {
+        throw new NegativeAmountException();
+      }
+      else
+      {
+        amountOfMoney -= money;
+      }
+    }
+    catch (InsufficientFundsException e)
+    {
+      System.out.println("You don't have enough money! You have " + amountOfMoney + " and you tried to withdraw " + money + ".");
+    }
+    catch (NegativeAmountException e)
+    {
+      System.out.println("Pleas enter a positive withdrawl amount.");
+    }
+
+
   }
-  
-  public int getSavingsAccountMoney()
-  {
-    return amountOfMoney;
-  }
-  
-  public double calculateInterest()
-  {
-    double interest;
-    interest = amountOfMoney * interestRate;
-    return interest;
-  }
-  public double getInterestRate()
-  {
-    return interestRate;
-  }
+
+
+
   
 }

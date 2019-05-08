@@ -5,6 +5,9 @@
  */
 //package bankapp;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -12,25 +15,7 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JApplet;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 
 /**
  *
@@ -57,6 +42,8 @@ public class BankApp extends JFrame {
    private JButton depositButton;
    private JButton withdrawButton;
    private JButton calculateInterestButton;
+   private JButton clearButton;
+   private JButton saveSummaryButton;
    
    private JRadioButton savingsRadioButton;
    private JRadioButton checkingRadioButton;
@@ -64,6 +51,7 @@ public class BankApp extends JFrame {
    private ArrayList<Customer> data = Customer.getCustomerDataArray();
    private int count = 0;
    boolean direction = false;
+   boolean isSavings = true;
    
 
 
@@ -110,7 +98,6 @@ public class BankApp extends JFrame {
       
        // components go here
       firstNameField = new JTextField();
-      //firstNameField.addActionListener(e -> searchCustomerButtonClicked());
       lastNameField = new JTextField();
       addressField = new JTextField();
       phoneNumberField = new JTextField();
@@ -149,10 +136,12 @@ public class BankApp extends JFrame {
       nextCustomerButton = new JButton("Next Customer");
       addCustomerButton = new JButton("Add Customer");
       updateCustomerButton = new JButton("Update Customer");
-      openAccountButton = new JButton("Open Account");
+      //openAccountButton = new JButton("Open Account");
       depositButton = new JButton("deposit");
       withdrawButton = new JButton("withdraw");
       calculateInterestButton = new JButton("Calculate Interest");
+      clearButton = new JButton("Clear fields");
+      saveSummaryButton = new JButton("Summary report");
       
       
    
@@ -167,10 +156,11 @@ public class BankApp extends JFrame {
       panel.add(nextCustomerButton, getConstraints(2, 2));
       panel.add(addCustomerButton, getConstraints(2, 3));
       panel.add(updateCustomerButton, getConstraints(2, 4));
-      panel.add(openAccountButton, getConstraints(2, 5));
+      panel.add(clearButton, getConstraints(2, 5));
       panel.add(depositButton, getConstraints(2, 6));
       panel.add(withdrawButton, getConstraints(2, 7));
       panel.add(calculateInterestButton, getConstraints(2, 8));
+      panel.add(saveSummaryButton, getConstraints(10, 10));
      
    
       //add action listeners to both buttons
@@ -179,10 +169,12 @@ public class BankApp extends JFrame {
       nextCustomerButton.addActionListener(e -> nextCustomerButtonClicked());
       addCustomerButton.addActionListener(e -> addCustomerButtonClicked());
       updateCustomerButton.addActionListener(e -> updateCustomerButtonClicked());
-      openAccountButton.addActionListener(e -> openAccountButtonClicked());
+     //openAccountButton.addActionListener(e -> openAccountButtonClicked());
       depositButton.addActionListener(e -> depositButtonClicked());
       withdrawButton.addActionListener(e -> withdrawButtonClicked());
       calculateInterestButton.addActionListener(e -> calculateInterestButtonClicked());
+      clearButton.addActionListener(e -> clear());
+      saveSummaryButton.addActionListener(e -> saveButtonPressed());
      
    
       //add this panel to the bottom of the frame
@@ -242,8 +234,12 @@ public class BankApp extends JFrame {
    private void resetButtonClicked() {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
    }
-   
-   public static void main(String[] args) {
+
+  /**
+   * Main driver application for the BankingApp
+   * @param args not used
+   */
+  public static void main(String[] args) {
    //BankApp app = new BankApp();
       java.awt.EventQueue.invokeLater(
          () -> {
@@ -252,21 +248,35 @@ public class BankApp extends JFrame {
             
    }
 
-   private void calculateInterestButtonClicked() 
+  /**
+   * Calculates the interest rate of a customer.
+   */
+  private void calculateInterestButtonClicked()
    {
      String interestField = calculatedInterestField.getText();
      calculatedInterestField.setText(Double.toString(data.get(count).getCalculatedInterest()));
    }
 
-   private void withdrawButtonClicked() 
+  /**
+   * Withdraw a certain amount of money from a customers savings or checking account.
+   */
+  private void withdrawButtonClicked()
    {
      String withDepos = withdrawDepositField.getText();
      try
      {
-       int moneyWithdraw = Integer.parseInt(withDepos);
-       data.get(count).subAccBalance(moneyWithdraw);
-       System.out.println("This is how much money is this customers account, after withdrawing: " +  data.get(count).getAccBalance());
-       balanceField.setText(Double.toString(data.get(count).getAccBalance()));
+       if (isSavings)
+       {
+         int moneyWithdraw = Integer.parseInt(withDepos);
+         data.get(count).subSavingsAccBalance(moneyWithdraw);
+         balanceField.setText(Double.toString(data.get(count).getSavingsAccBalance()));
+       }
+       else
+       {
+         int moneyWithdraw = Integer.parseInt(withDepos);
+         data.get(count).subCheckingAccountBalance(moneyWithdraw);
+         balanceField.setText(Double.toString(data.get(count).getCheckingAccBalance()));
+       }
      }
      catch(Exception ignored) 
      {
@@ -274,15 +284,26 @@ public class BankApp extends JFrame {
      }
    }
 
-   private void depositButtonClicked() 
+  /**
+   * Deposits a specific amount of money into a customers checking or savings account.
+   */
+  private void depositButtonClicked()
    {
      String withDepos = withdrawDepositField.getText();
      try
      {
-       int moneyDeposit = Integer.parseInt(withDepos);
-       data.get(count).addAccBalance(moneyDeposit);
-       //System.out.println("This is how much money is this customers account, after depositing: " +  data.get(count).getAccBalance());
-       balanceField.setText(Double.toString(data.get(count).getAccBalance()));
+       if (isSavings)
+       {
+         int moneyDeposit = Integer.parseInt(withDepos);
+         data.get(count).addSavingsAccBalance(moneyDeposit);
+         balanceField.setText(Double.toString(data.get(count).getSavingsAccBalance()));
+       }
+       else
+       {
+         int moneyDeposit = Integer.parseInt(withDepos);
+         data.get(count).addCheckingAccBalance(moneyDeposit);
+         balanceField.setText(Double.toString(data.get(count).getCheckingAccBalance()));
+       }
      }
      catch(Exception ignored) 
      {
@@ -290,17 +311,27 @@ public class BankApp extends JFrame {
      }
    }
 
-   private void openAccountButtonClicked() 
+  /* private void openAccountButtonClicked()
    {
-     String account = accountNumberField.getText();
-     SavingsAccount temp = new SavingsAccount(account);
-     data.get(count).add(temp);
-     System.out.println("Account successfully added!");
-    
-     
-     
-   }
+     if (isSavings)
+     {
+       String account = accountNumberField.getText();
+       Account temp = new SavingsAccount(account);
+       data.get(count).addAccount(temp);
+       System.out.println("Savings Account successfully added!");
+     }
+     else
+     {
+       String account = accountNumberField.getText();
+       Account temp = new CheckingAccount(account);
+       data.get(count).addAccount(temp);
+       System.out.println("Checking Account successfully added!");
+     }
+   } */
 
+  /**
+   * Updates a customers information.
+   */
    private void updateCustomerButtonClicked() {
       String firstName = firstNameField.getText();
       String lastName = lastNameField.getText();
@@ -327,26 +358,45 @@ public class BankApp extends JFrame {
       }
    }
 
-   private void addCustomerButtonClicked() 
+  /**
+   * Adds a customer to the database.
+   */
+  private void addCustomerButtonClicked()
    {
       String firstName = firstNameField.getText();
       String lastName = lastNameField.getText();
       String address = addressField.getText();
       String phoneNumber = phoneNumberField.getText();
       String accountNumber = accountNumberField.getText();
-      Customer temp = new Customer(firstName, lastName, address, phoneNumber, new SavingsAccount(accountNumber));
+      Customer temp = new Customer(firstName, lastName, address, phoneNumber, new SavingsAccount(accountNumber), new CheckingAccount(accountNumber));
       data.add(temp);
    }
 
-   private void nextCustomerButtonClicked()
+  /**
+   * Goes to the next customer in the database.
+   */
+  private void nextCustomerButtonClicked()
    {
-     firstNameField.setText(data.get(count).getFirstName());
-     lastNameField.setText(data.get(count).getLastName());
-     addressField.setText(data.get(count).getAddress());
-     phoneNumberField.setText(data.get(count).getPhoneNumber());
-     accountNumberField.setText(data.get(count).getAccNumber());
-     balanceField.setText(Double.toString(data.get(count).getAccBalance()));
-     calculatedInterestField.setText(Double.toString(data.get(count).getCalculatedInterest()));
+     if (isSavings)
+     {
+       firstNameField.setText(data.get(count).getFirstName());
+       lastNameField.setText(data.get(count).getLastName());
+       addressField.setText(data.get(count).getAddress());
+       phoneNumberField.setText(data.get(count).getPhoneNumber());
+       accountNumberField.setText(data.get(count).getAccNumber());
+       balanceField.setText(Double.toString(data.get(count).getSavingsAccBalance()));
+       calculatedInterestField.setText(Double.toString(data.get(count).getCalculatedInterest()));
+     }
+     else
+     {
+       firstNameField.setText(data.get(count).getFirstName());
+       lastNameField.setText(data.get(count).getLastName());
+       addressField.setText(data.get(count).getAddress());
+       phoneNumberField.setText(data.get(count).getPhoneNumber());
+       accountNumberField.setText(data.get(count).getAccNumber());
+       balanceField.setText(Double.toString(data.get(count).getCheckingAccBalance()));
+       calculatedInterestField.setText(Double.toString(data.get(count).getCalculatedInterest()));
+     }
      if (count == data.size() - 1)
      {
        count = -1;
@@ -355,15 +405,31 @@ public class BankApp extends JFrame {
      
    }
 
-   private void previousCustomerButtonClicked() 
+  /**
+   * Goes to the previous customer in the database.
+   */
+  private void previousCustomerButtonClicked()
    {
-     firstNameField.setText(data.get(count).getFirstName());
-     lastNameField.setText(data.get(count).getLastName());
-     addressField.setText(data.get(count).getAddress());
-     phoneNumberField.setText(data.get(count).getPhoneNumber());
-     accountNumberField.setText(data.get(count).getAccNumber());
-     balanceField.setText(Double.toString(data.get(count).getAccBalance()));
-     calculatedInterestField.setText(Double.toString(data.get(count).getCalculatedInterest()));
+     if (isSavings)
+     {
+       firstNameField.setText(data.get(count).getFirstName());
+       lastNameField.setText(data.get(count).getLastName());
+       addressField.setText(data.get(count).getAddress());
+       phoneNumberField.setText(data.get(count).getPhoneNumber());
+       accountNumberField.setText(data.get(count).getAccNumber());
+       balanceField.setText(Double.toString(data.get(count).getSavingsAccBalance()));
+       calculatedInterestField.setText(Double.toString(data.get(count).getCalculatedInterest()));
+     }
+     else
+     {
+       firstNameField.setText(data.get(count).getFirstName());
+       lastNameField.setText(data.get(count).getLastName());
+       addressField.setText(data.get(count).getAddress());
+       phoneNumberField.setText(data.get(count).getPhoneNumber());
+       accountNumberField.setText(data.get(count).getAccNumber());
+       balanceField.setText(Double.toString(data.get(count).getCheckingAccBalance()));
+       calculatedInterestField.setText(Double.toString(data.get(count).getCalculatedInterest()));
+     }
      if (count == 0)
      {
        count = data.size();
@@ -371,7 +437,10 @@ public class BankApp extends JFrame {
      count--;
    }
 
-   private void searchCustomerButtonClicked() 
+  /**
+   * Searches the database for a specified customer; does nothing if not found.
+   */
+  private void searchCustomerButtonClicked()
    {
       String firstName = firstNameField.getText();
       String lastName = lastNameField.getText();
@@ -392,33 +461,84 @@ public class BankApp extends JFrame {
             phoneNumberField.setText(data.get(i).getPhoneNumber());
             accountNumberField.setText(data.get(i).getAccNumber());
             count = i;
-            direction = true;
-          }
-          if (!direction)
-          {
-            JFrame temp = new JFrame("Customer does not exist");
-            JPanel tempPanel = new JPanel();
-            JButton button = new JButton("Click me to exit.");
-            tempPanel.add(button);
-            temp.add(tempPanel);
-            temp.setVisible(true);
-            temp.setSize(500,500);
-            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            direction = true;
           }
         }
    }
-   
-   private void sizeRadioButtonClicked() {
-      if (savingsRadioButton.isSelected()){
+
+  /**
+   * This method switches between a savings account and a checking account.
+   */
+  private void sizeRadioButtonClicked()
+   {
+      if (savingsRadioButton.isSelected())
+      {
+        balanceField.setText(Double.toString(data.get(count).getSavingsAccBalance()));
+        withdrawDepositField.setText("");
+
          enableSavingsControls(true);
-      }else if (checkingRadioButton.isSelected()){
+        System.out.println(count);
+      }
+      else if (checkingRadioButton.isSelected())
+      {
+        balanceField.setText(Double.toString(data.get(count).getCheckingAccBalance()));
+        withdrawDepositField.setText("");
          enableSavingsControls(false);
+         System.out.println(count);
       }
    }
 
-   private void enableSavingsControls(boolean b) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  /**
+   * This method differentiates between the savings option and the checking option clicked.
+   * @param b the boolean parameter to be switched
+   */
+   private void enableSavingsControls(boolean b)
+   {
+     if (b)
+     {
+       isSavings = true;
+     }
+     else
+     {
+       isSavings = false;
+     }
+
+   }
+
+  /**
+   * clears the text fields of the fields.
+   */
+   private void clear()
+   {
+     firstNameField.setText("");
+     lastNameField.setText("");
+     addressField.setText("");
+     phoneNumberField.setText("");
+     accountNumberField.setText("");
+     balanceField.setText("");
+     calculatedInterestField.setText("");
+   }
+
+  /**
+   * Saves the customers info to a text file.
+   */
+  private void saveButtonPressed()
+   {
+     BufferedWriter writer;
+     try
+     {
+       writer = new BufferedWriter(new FileWriter("customers.txt"));
+
+       for (Customer customer : data)
+       {
+         writer.write(customer.toString());
+       }
+
+       writer.close();
+     }
+     catch(IOException e)
+     {
+       System.out.println("Could not write to file.");
+     }
    }
    
 

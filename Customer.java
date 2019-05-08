@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.*;
 public class Customer
 {
@@ -6,9 +7,9 @@ public class Customer
   private String address;
   private String pNumber;
   private SavingsAccount acc;
-  private ArrayList<SavingsAccount> accList = new ArrayList<>();
+  private CheckingAccount checkAcc;
   
-  public Customer(String fName, String lName, String address, String pNumber, SavingsAccount acc)
+  public Customer(String fName, String lName, String address, String pNumber, SavingsAccount acc, CheckingAccount checkAcc)
   {
     if (fName == null || fName.length() == 0)
     {
@@ -21,6 +22,7 @@ public class Customer
     this.address = address;
     this.pNumber = pNumber;
     this.acc = acc;
+    this.checkAcc = checkAcc;
     }
     
   }
@@ -80,17 +82,34 @@ public class Customer
     return acc.getAccountNumber();
   }
   
-  public int getAccBalance()
+  public int getSavingsAccBalance()
   {
-    return acc.getSavingsAccountMoney();
+    return acc.getAccountMoney();
   }
+
+  public int getCheckingAccBalance()
+  {
+    return checkAcc.getAccountMoney();
+  }
+
   
-  public void addAccBalance(int a)
+  public void addSavingsAccBalance(int a)
   {
     acc.deposit(a);
   }
-  
-  public void subAccBalance(int a)
+  public void addCheckingAccBalance(int amount)
+  {
+    checkAcc.deposit(amount);
+  }
+
+  public void subCheckingAccountBalance(int amount)
+  {
+    checkAcc.withdraw(amount);
+  }
+
+
+
+  public void subSavingsAccBalance(int a)
   {
     acc.withdraw(a);
   }
@@ -100,7 +119,7 @@ public class Customer
     fName = n;
   }
   
-    public void setLastName(String n)
+  public void setLastName(String n)
   {
     lName = n;
   }
@@ -119,24 +138,33 @@ public class Customer
   {
     return acc.calculateInterest();
   }
-  
-  public void add(SavingsAccount b)
+
+  public String toString()
   {
-    accList.add(b);
+    return "Customer name: " + getFirstName() + " " + getLastName() + "\n"
+            + "Phone number: " + getPhoneNumber() + "\n"
+            + "Address: " + getAddress() + "\n"
+            + "Savings Account number: " + getAccNumber() + "\n"
+            + "Checking Account number: " + getAccNumber() + "\n"
+            + "Savings Account balance: " + acc.getAccountMoney() + "\n"
+            + "Checking Account balance: " + checkAcc.getAccountMoney() + ".\n\n";
+
   }
-  
+
   
   public static ArrayList<Customer> getCustomerDataArray()
   {
     ArrayList<Customer> data = new ArrayList<>();
-    Customer Victor = new Customer("Victor", "Velea", "4321 Hungry avenue","703547", new SavingsAccount("1102"));
-    Customer Kaitlyn = new Customer("Kaitlyn", "Smith", "19002 Smile Drive","222222", new SavingsAccount("1103"));
-    Customer Jessie = new Customer("Jessie", "Quincy", "302 drive apt 401","871523", new SavingsAccount("1104"));
-    Customer Jie = new Customer("Jie", "I forgot your pronouns", "1234 dude guy drive","8887437", new SavingsAccount("1105"));
+    Customer Victor = new Customer("Victor", "Velea", "4321 Hungry avenue","703547", new SavingsAccount("1102"), new CheckingAccount("1102"));
+    Customer Kaitlyn = new Customer("Kaitlyn", "Smith", "19002 Smile Drive","222222", new SavingsAccount("1103"), new CheckingAccount("1103"));
+    Customer Jessie = new Customer("Jessie", "Quincy", "302 drive apt 401","871523", new SavingsAccount("1104"),new CheckingAccount("1104"));
+    Customer Jie = new Customer("Jie", "I forgot your pronouns", "1234 dude guy drive",
+            "8887437", new SavingsAccount("1105"), new CheckingAccount("1105"));
     data.add(Victor);
     data.add(Kaitlyn);
     data.add(Jessie);
     data.add(Jie);
+    data.add(new Customer("jose", "muffin", "7261 Girraffe Road Court", "8749088833", new SavingsAccount("1106"), new CheckingAccount("1106")));
     return data;
   }
   
