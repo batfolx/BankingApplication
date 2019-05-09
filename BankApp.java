@@ -19,7 +19,7 @@ import javax.swing.*;
 
 /**
  *
- * @author VANESSA ESSONO
+ * @author Victor Velea
  */
 public class BankApp extends JFrame {
    
@@ -136,7 +136,7 @@ public class BankApp extends JFrame {
       nextCustomerButton = new JButton("Next Customer");
       addCustomerButton = new JButton("Add Customer");
       updateCustomerButton = new JButton("Update Customer");
-      //openAccountButton = new JButton("Open Account");
+      openAccountButton = new JButton("Open Account");
       depositButton = new JButton("deposit");
       withdrawButton = new JButton("withdraw");
       calculateInterestButton = new JButton("Calculate Interest");
@@ -161,6 +161,7 @@ public class BankApp extends JFrame {
       panel.add(withdrawButton, getConstraints(2, 7));
       panel.add(calculateInterestButton, getConstraints(2, 8));
       panel.add(saveSummaryButton, getConstraints(10, 10));
+      panel.add(openAccountButton, getConstraints(5, 12));
      
    
       //add action listeners to both buttons
@@ -169,13 +170,12 @@ public class BankApp extends JFrame {
       nextCustomerButton.addActionListener(e -> nextCustomerButtonClicked());
       addCustomerButton.addActionListener(e -> addCustomerButtonClicked());
       updateCustomerButton.addActionListener(e -> updateCustomerButtonClicked());
-     //openAccountButton.addActionListener(e -> openAccountButtonClicked());
       depositButton.addActionListener(e -> depositButtonClicked());
       withdrawButton.addActionListener(e -> withdrawButtonClicked());
       calculateInterestButton.addActionListener(e -> calculateInterestButtonClicked());
       clearButton.addActionListener(e -> clear());
       saveSummaryButton.addActionListener(e -> saveButtonPressed());
-     
+      openAccountButton.addActionListener(e -> openAccountButtonClicked());
    
       //add this panel to the bottom of the frame
       //add(buttonPanel, BorderLayout.SOUTH);
@@ -263,6 +263,7 @@ public class BankApp extends JFrame {
   private void withdrawButtonClicked()
    {
      String withDepos = withdrawDepositField.getText();
+
      try
      {
        if (isSavings)
@@ -310,24 +311,6 @@ public class BankApp extends JFrame {
        System.out.println("You need to enter a valid deposit value.");
      }
    }
-
-  /* private void openAccountButtonClicked()
-   {
-     if (isSavings)
-     {
-       String account = accountNumberField.getText();
-       Account temp = new SavingsAccount(account);
-       data.get(count).addAccount(temp);
-       System.out.println("Savings Account successfully added!");
-     }
-     else
-     {
-       String account = accountNumberField.getText();
-       Account temp = new CheckingAccount(account);
-       data.get(count).addAccount(temp);
-       System.out.println("Checking Account successfully added!");
-     }
-   } */
 
   /**
    * Updates a customers information.
@@ -469,23 +452,20 @@ public class BankApp extends JFrame {
    * This method switches between a savings account and a checking account.
    */
   private void sizeRadioButtonClicked()
-   {
-      if (savingsRadioButton.isSelected())
-      {
-        balanceField.setText(Double.toString(data.get(count).getSavingsAccBalance()));
-        withdrawDepositField.setText("");
-
-         enableSavingsControls(true);
-        System.out.println(count);
-      }
-      else if (checkingRadioButton.isSelected())
-      {
-        balanceField.setText(Double.toString(data.get(count).getCheckingAccBalance()));
-        withdrawDepositField.setText("");
-         enableSavingsControls(false);
-         System.out.println(count);
-      }
-   }
+ {
+    if (savingsRadioButton.isSelected())
+    {
+      balanceField.setText(Double.toString(data.get(count).getSavingsAccBalance()));
+      withdrawDepositField.setText("");
+      enableSavingsControls(true);
+    }
+    else if (checkingRadioButton.isSelected())
+    {
+      balanceField.setText(Double.toString(data.get(count).getCheckingAccBalance()));
+      withdrawDepositField.setText("");
+      enableSavingsControls(false);
+    }
+ }
 
   /**
    * This method differentiates between the savings option and the checking option clicked.
@@ -516,6 +496,7 @@ public class BankApp extends JFrame {
      accountNumberField.setText("");
      balanceField.setText("");
      calculatedInterestField.setText("");
+     count = 0;
    }
 
   /**
@@ -540,6 +521,25 @@ public class BankApp extends JFrame {
        System.out.println("Could not write to file.");
      }
    }
+
+   public void openAccountButtonClicked()
+   {
+     if (isSavings)
+     {
+       String accountNum = accountNumberField.getText();
+       data.get(count).addSavingsAccount(new SavingsAccount(accountNum));
+       System.out.println("Added savings account to " +  data.get(count).getFirstName());
+
+     }
+     else
+     {
+       String accountNum = accountNumberField.getText();
+       data.get(count).addCheckingAccount(new CheckingAccount(accountNum));
+       System.out.println("Added checking account to " +  data.get(count).getFirstName());
+     }
+
+   }
+
    
 
 }
