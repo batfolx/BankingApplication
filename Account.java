@@ -1,3 +1,5 @@
+import javax.swing.*;
+import java.awt.*;
 import java.util.Random;
 
 public abstract class Account
@@ -35,7 +37,21 @@ public abstract class Account
     }
     catch (NegativeAmountException ig)
     {
-      System.out.println("You entered " + money + ". Please enter a positive value.");
+      JFrame frame = new JFrame();
+      JButton ok = new JButton("Click here to exit.");
+      JTextArea message = new JTextArea("Error! Enter a positive amount.");
+      message.setPreferredSize(new Dimension(300,300));
+
+      JPanel panel = new JPanel();
+      panel.add(ok);
+      panel.add(message);
+      frame.add(panel);
+      frame.setPreferredSize(new Dimension(250, 250));
+
+      frame.pack();
+      frame.setVisible(true);
+      ok.addActionListener(event -> frame.dispose());
+
     }
 
   }
