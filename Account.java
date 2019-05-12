@@ -21,6 +21,11 @@ public abstract class Account
     return accNum;
   }
 
+  public void setAccNum(String s)
+  {
+    accNum = s;
+  }
+
   public void deposit(int money)
   {
 

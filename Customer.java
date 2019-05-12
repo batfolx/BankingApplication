@@ -77,11 +77,14 @@ public class Customer
     return pNumber;
   }
 
+  /**
+   * Method for getting the full name of a customer.
+   * @return the full name of the customer.
+   */
   public String getFullName()
   {
     return fName + " " + lName;
   }
-
 
   /**
    * Returns the account number of the savings account obj.
@@ -90,6 +93,15 @@ public class Customer
   public String getAccNumber()
   {
     return savingsAcc.getAccountNumber();
+  }
+
+  /**
+   * Gets the main checking account number.
+   * @return the checking account number.
+   */
+  public String getCheckingAccNumber()
+  {
+    return checkAcc.getAccountNumber();
   }
 
   /**
@@ -217,6 +229,16 @@ public class Customer
   public double getCalculatedInterest()
   {
     return savingsAcc.calculateInterest();
+  }
+
+  public void setSavingsAccountNumber(String s)
+  {
+    savingsAcc.setAccNum(s);
+  }
+
+  public void setCheckingAccountNumber(String s)
+  {
+    checkAcc.setAccNum(s);
   }
 
   /**
