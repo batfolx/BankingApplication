@@ -36,11 +36,26 @@ public class RandomStringGenerator
    * Generates a random customer string for testing purposes.
    * @return the customer as a String representation.
    */
-  public static String generateString()
+  private static String generateString()
   {
     Random r = new Random();
     String alphabet = "abcdefghijklmnopqrstuvwxyz";
     String nums = "1234567890";
+
+    String[] firstNames = {"John", "Becky", "Chris", "Kaitlyn", "Jorge", "Nicole", "Tyler", "Victor", "Quincy", "Joseph", "Fenix",
+                           "Puppy", "Jie", "Ron", "Moe", "Domino", "Flynn", "Jacob", "Jackson", "Allie", "Ally", "Sean", "Adam",
+                           "ChickenPotPie", "Jesus", "God", "Juicy", "GoldenDoubloons", "Frenchie", "Yeet", "Pepperoni", "Asus",
+                           "Ash", "Jax", "Singed", "Jarvan IV", "Garen", "Aatrox", "Annie", "Nami", "Sejuani", "Knix", "Nocturne"};
+
+    String[] lastNames = {"Smith", "Jones", "Brown", "Miller", "Davis", "King", "Bones", "Davis", "Burger King", "Ross", "MacPhearson",
+                           "My wife left me", "Lee", "Lopez", "Rivera", "Baker", "Baily", "White", "Harris", "Anderson", "Quimper",
+                            "Parker", "Edwards", "Lewis", "Garcia", "Martinez", "Mister", "Foster", "Flores", "Washington", "McDonalds",
+                           "Burger King Foot Lettuce"};
+
+    String[] streetNames = {"Miller Court", "Street", "Avenue", "Boulevard", "Corner", "Cul De Sac", "Road", "Drive", "Park", "Parkway"};
+
+
+
     String all = alphabet + nums;
     String customer = "";
     String randomFirstName = "";
@@ -49,19 +64,19 @@ public class RandomStringGenerator
     String checkingAcc = "";
     String savingsAcc = "";
     String pNumber = "";
-    while (randomFirstName.length() < 10)
-    {
-      randomFirstName += alphabet.charAt(r.nextInt(alphabet.length()));
-      randomLastName += alphabet.charAt(r.nextInt(alphabet.length()));
-    }
+
+    randomFirstName = firstNames[r.nextInt(firstNames.length - 1)];
+    randomLastName = lastNames[r.nextInt(lastNames.length-1)];
+
     String fullName = randomFirstName + " " +  randomLastName ;
 
-    address += nums;
 
-    while (address.length() < 20)
+    while (address.length() < 5)
     {
-      address += all.charAt(r.nextInt(nums.length()));
+      address += nums.charAt(r.nextInt(nums.length()));
     }
+
+    address += " " + lastNames[r.nextInt(lastNames.length-1)] + " " + streetNames[r.nextInt(streetNames.length-1)];
 
     while (checkingAcc.length() < 5)
     {

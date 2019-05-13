@@ -5,7 +5,7 @@
  */
 //package bankapp;
 
-import javafx.scene.layout.Border;
+
 
 import java.awt.*;
 import java.io.*;
@@ -36,7 +36,7 @@ public class BankApp extends JFrame {
   private JButton addCustomerButton;
   private JButton updateCustomerButton;
   private JButton openSavingsAccountButton;
-  private JButton openCheckingAccountutton;
+  private JButton openCheckingAccountButton;
   private JButton depositButton;
   private JButton withdrawButton;
   private JButton calculateInterestButton;
@@ -45,6 +45,7 @@ public class BankApp extends JFrame {
   private JButton loadCustomersButton;
   private JButton viewSavingsAccountButton;
   private JButton viewCheckingAccountButton;
+  private JButton transactionButton;
 
   private JRadioButton savingsRadioButton;
   private JRadioButton checkingRadioButton;
@@ -55,6 +56,11 @@ public class BankApp extends JFrame {
   private int count = 0;
 
   boolean isSavings = true;
+
+
+
+  private String transactions;
+
 
 
 
@@ -70,6 +76,9 @@ public class BankApp extends JFrame {
 
    buttons = new ArrayList<>();
    textFields = new ArrayList<>();
+   initComponents();
+   setTextFields();
+
 
   }
 
@@ -81,6 +90,9 @@ public class BankApp extends JFrame {
     setTitle("Banking Application");
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setLocationByPlatform(true);
+
+
+    transactions = "";
 
 
     //set up size component
@@ -117,6 +129,7 @@ public class BankApp extends JFrame {
     interestMonthField = new JTextField() ;
     calculatedInterestField = new JTextField() ;
     checkingAccountNumberField = new JTextField();
+
 
     textFields.add(firstNameField);
     textFields.add(lastNameField);
@@ -163,7 +176,7 @@ public class BankApp extends JFrame {
     addCustomerButton = new JButton("Add Customer");
     updateCustomerButton = new JButton("Update Customer");
     openSavingsAccountButton = new JButton("Open Savings Account");
-    openCheckingAccountutton = new JButton("Open Checking Account");
+    openCheckingAccountButton = new JButton("Open Checking Account");
     depositButton = new JButton("deposit");
     withdrawButton = new JButton("withdraw");
     calculateInterestButton = new JButton("Calculate Interest");
@@ -172,6 +185,7 @@ public class BankApp extends JFrame {
     loadCustomersButton = new JButton("Load customers");
     viewCheckingAccountButton = new JButton("View Checking Accounts");
     viewSavingsAccountButton = new JButton("View Savings Account");
+    transactionButton = new JButton("View Transaction History");
 
     // adds all the buttons to the List of buttons
     // for visual purposes
@@ -181,7 +195,7 @@ public class BankApp extends JFrame {
     buttons.add(addCustomerButton);
     buttons.add(updateCustomerButton);
     buttons.add(openSavingsAccountButton);
-    buttons.add(openCheckingAccountutton);
+    buttons.add(openCheckingAccountButton);
     buttons.add(depositButton);
     buttons.add(withdrawButton);
     buttons.add(calculateInterestButton);
@@ -190,9 +204,7 @@ public class BankApp extends JFrame {
     buttons.add(loadCustomersButton);
     buttons.add(viewCheckingAccountButton);
     buttons.add(viewSavingsAccountButton);
-
-
-
+    buttons.add(transactionButton);
 
 
     //create a panel that uses the GridBagLayout manager with right Alignment
@@ -214,8 +226,9 @@ public class BankApp extends JFrame {
     panel.add(loadCustomersButton, getConstraints(3, 1));
     panel.add(viewCheckingAccountButton, getConstraints(3, 2));
     panel.add(viewSavingsAccountButton, getConstraints(3, 3));
-    panel.add(openCheckingAccountutton, getConstraints(3,4));
+    panel.add(openCheckingAccountButton, getConstraints(3,4));
     panel.add(openSavingsAccountButton, getConstraints(3, 5));
+    panel.add(transactionButton, getConstraints(5, 5));
 
 
     //add action listeners to both buttons
@@ -231,11 +244,12 @@ public class BankApp extends JFrame {
     saveSummaryButton.addActionListener(e -> saveButtonPressed());
     viewCheckingAccountButton.addActionListener(e -> viewCheckingAccountButtonClicked());
     viewSavingsAccountButton.addActionListener(e -> viewSavingsAccountButtonClicked());
-    openCheckingAccountutton.addActionListener(e -> openCheckingAccountButtonClicked());
+    openCheckingAccountButton.addActionListener(e -> openCheckingAccountButtonClicked());
     openSavingsAccountButton.addActionListener(e -> openSavingsAccountButtonClicked());
     depositButton.addActionListener(e -> depositIntoSpecifiedCheckingAccountButtonClicked());
     depositButton.addActionListener(e -> depositIntoSpecifiedSavingsAccountButtonClicked());
     loadCustomersButton.addActionListener(e -> loadCustomersButtonClicked());
+    transactionButton.addActionListener(e -> transactionButtonClicked());
 
     for (JButton button : buttons)
     {
@@ -306,7 +320,7 @@ public class BankApp extends JFrame {
   public static void main(String[] args)
   {
     BankApp app = new BankApp();
-    app.initComponents();
+
   }
 
   /**
@@ -434,7 +448,11 @@ public class BankApp extends JFrame {
       {
         try
         {
+          int oldBalance =  data.get(count).getCheckingAccounts().get(i).getAccountMoney();
           data.get(count).getCheckingAccounts().get(i).withdraw(Integer.parseInt(withdrawDepositField.getText()));
+          transactions += "Customer " + data.get(count).getFullName() +  " withdraw $" + withdrawDepositField.getText() + " from "
+                  + data.get(count).getCheckingAccounts().get(i).getAccountNumber() + " checking account.\n"
+                  + "Old balance was " + oldBalance + ". New balance is $" + data.get(count).getCheckingAccounts().get(i).getAccountMoney();
           return;
         }
         catch (Exception ig)
@@ -445,8 +463,11 @@ public class BankApp extends JFrame {
     }
     if (!isSavings)
     {
+      int oldBalance = data.get(count).getCheckingAccBalance();
       data.get(count).subCheckingAccountBalance(Integer.parseInt(withdrawDepositField.getText()));
       balanceField.setText(data.get(count).getCheckingAccBalance() + "");
+      transactions += "Customer " + data.get(count).getFullName() +  " withdraw $" + withdrawDepositField.getText() + " from main savings account.\n"
+                    + "Old balance was $" + oldBalance + ". New balance is $" + data.get(count).getCheckingAccBalance();
     }
   }
 
@@ -665,7 +686,6 @@ public class BankApp extends JFrame {
     {
       textField.setText("");
     }
-
     count = 0;
   }
 
@@ -684,24 +704,22 @@ public class BankApp extends JFrame {
         String checkAcc = "";
         String savingsAcc = "";
 
-
-
         for (int j = 0; j < data.get(i).getSavingsAccounts().size(); j++)
         {
           savingsAcc += "\n\tSavings Account " + data.get(i).getSavingsAccounts().get(j).getAccountNumber() +
-                     " with balance " + data.get(i).getSavingsAccounts().get(j).getAccountMoney() + "\n";
+                     " with balance $" + data.get(i).getSavingsAccounts().get(j).getAccountMoney() + "\n";
         }
 
         for (int k = 0; k < data.get(i).getCheckingAccounts().size(); k++)
         {
           checkAcc += "\n\tChecking Account " + data.get(i).getCheckingAccounts().get(k).getAccountNumber() +
-                  " with balance " + data.get(i).getCheckingAccounts().get(k).getAccountMoney() + "\n";
+                  " with balance $" + data.get(i).getCheckingAccounts().get(k).getAccountMoney() + "\n";
         }
 
-        writer.write("Customer " + data.get(i).getFullName() + " with savings account balance " +  data.get(i).getSavingsAccBalance() + " with accounts: " + savingsAcc + checkAcc + "\n");
+        writer.write("Customer " + data.get(i).getFullName() + "\nMain savings account balance $" +  data.get(i).getSavingsAccBalance()
+                 + ".\nMain checking account balance $" + data.get(i).getCheckingAccBalance() + ".\nSub-accounts: " + savingsAcc + checkAcc + "\n");
         writer.write("-----------------------------------------------------------------\n");
       }
-
 
       writer.close();
     }
@@ -764,7 +782,7 @@ public class BankApp extends JFrame {
 
     try
     {
-      reader = new BufferedReader(new FileReader("C:\\Users\\Victor\\IdeaProjects\\BankingApp\\customers_data.txt"));
+      reader = new BufferedReader(new FileReader("C:\\Users\\Victor\\IdeaProjects\\BankingApplication\\customers_data.txt"));
 
       String line = reader.readLine();
 
@@ -828,6 +846,33 @@ public class BankApp extends JFrame {
     }
     data.get(count).getCheckingAccounts().add(new CheckingAccount(checkingAccountNumberField.getText()));
   }
+
+  private void transactionButtonClicked()
+  {
+
+    System.out.println("ig ot here");
+    JFrame transactionHistoryFrame = new JFrame();
+    JPanel tmpPanel = new JPanel();
+    JFormattedTextField transactionHistory = new JFormattedTextField(transactions);
+
+
+    tmpPanel.add(transactionHistory);
+
+
+    transactionHistoryFrame.add(tmpPanel);
+    transactionHistoryFrame.setPreferredSize(new Dimension(800,800));
+    transactionHistory.setPreferredSize(new Dimension(300,600));
+    System.out.println("here too");
+
+    transactionHistory.setEditable(false);
+
+    transactionHistoryFrame.pack();
+    transactionHistoryFrame.setVisible(true);
+
+
+  }
+
+
 
 }
 
