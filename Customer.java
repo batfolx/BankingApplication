@@ -5,6 +5,8 @@ public class Customer
   private String lName;
   private String address;
   private String pNumber;
+  private String login;
+  private String password;
   private SavingsAccount savingsAcc;
   private CheckingAccount checkAcc;
   private List<SavingsAccount> savingsAccounts;
@@ -22,7 +24,7 @@ public class Customer
    * @param savingsAcc The savings account of the Customer.
    * @param checkAcc The checking account of the Customer.
    */
-  public Customer(String fName, String lName, String address, String pNumber, SavingsAccount savingsAcc, CheckingAccount checkAcc)
+  public Customer(String fName, String lName, String address, String pNumber, SavingsAccount savingsAcc, CheckingAccount checkAcc, String login, String password)
   {
     if (fName == null || fName.length() == 0)
     {
@@ -34,10 +36,13 @@ public class Customer
       this.lName = lName;
       this.address = address;
       this.pNumber = pNumber;
+      this.login = login;
+      this.password = password;
       this.savingsAcc = savingsAcc;
       this.checkAcc = checkAcc;
       savingsAccounts = new ArrayList<>();
       checkingAccounts = new ArrayList<>();
+
     }
   }
 
@@ -94,6 +99,44 @@ public class Customer
   {
     return savingsAcc.getAccountNumber();
   }
+
+  /**
+   * Gets the login of the customer.
+   * @return the login of the customer.
+   */
+  public String getLogin()
+  {
+    return login;
+  }
+
+  /**
+   * Gets the password of the customer.
+   * @return the password.
+   */
+  public String getPassword()
+  {
+    return password;
+  }
+
+  /**
+   * Sets the login of the customer.
+   * @param log the login to be set.
+   */
+  public void setLogin(String log)
+  {
+    login = log;
+  }
+
+  /**
+   * Sets the password of a customer.
+   * @param pass the password to be reset.
+   */
+  public void setPassword(String pass)
+  {
+    password = pass;
+  }
+
+
 
   /**
    * Gets the main checking account number.
@@ -261,10 +304,10 @@ public class Customer
    * This method returns an ArrayList of Customers to work with in the BankingApp.
    * @return the ArrayList of Customer objects.
    */
-  public static ArrayList<Customer> getCustomerDataArray()
+  /*public static ArrayList<Customer> getCustomerDataArray()
   {
     ArrayList<Customer> data = new ArrayList<>();
-    Customer Victor = new Customer("Victor", "Doe", "4321 Hungry avenue","5439086612", new SavingsAccount("1102"), new CheckingAccount("1102"));
+    Customer Victor = new Customer("Victor", "Doe", "4321 Hungry avenue","5439086612", new SavingsAccount("1102"), new CheckingAccount("1102"), "Victor", "Doe");
     Customer Kaitlyn = new Customer("Kaitlyn", "Smith", "19002 Smile Drive","8005882300", new SavingsAccount("1103"), new CheckingAccount("1103"));
     Customer Jessie = new Customer("Jessie", "Quincy", "302 drive apt 401","8715232213", new SavingsAccount("1104"),new CheckingAccount("1104"));
     Customer Jie = new Customer("Jie", "Cheenus", "1234 dude guy drive",
@@ -273,8 +316,8 @@ public class Customer
     data.add(Kaitlyn);
     data.add(Jessie);
     data.add(Jie);
-    data.add(new Customer("jose", "muffin", "7261 Girraffe Road Court", "8749088833", new SavingsAccount("1106"), new CheckingAccount("1106")));
+
     return data;
-  }
+  } */
 
 }
