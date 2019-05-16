@@ -1,22 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-//package bankapp;
-
-
-
 import java.awt.*;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
 
 /**
+ * Bank application class that simulates a real banking application.
+ * There is a GUI and interactive features with this application.
  *
  * @author Victor Velea
+ * @version 5/15
  */
 public class BankApp extends JFrame {
 
@@ -58,13 +51,13 @@ public class BankApp extends JFrame {
   private ArrayList<Customer> data;
   private List<JTextField> textFields;
   private List<JButton> buttons;
+  private List<Admin> administrators;
   private List<String> transactions;
 
 
   private int count = 0;
 
   private boolean isSavings = true;
-  private boolean isSavingsLocal = true;
 
   public BankApp()
   {
@@ -80,7 +73,10 @@ public class BankApp extends JFrame {
    textFields = new ArrayList<>();
    transactions = new ArrayList<>();
    loginInfo = new HashMap<>();
+   administrators = new ArrayList<>();
+   administrators.add(new Admin("potpie", "chicken", "Victor"));
    data = loadCustomersButtonClicked();
+   //fillMap();
    startLoginPage();
 
   }
@@ -102,7 +98,6 @@ public class BankApp extends JFrame {
 
     JLabel loginLabel = new JLabel("Login: ");
     JLabel passwordLabel = new JLabel("Password: ");
-    // passwordLabel.setBounds();
     JButton enterButton = new JButton("Enter");
 
     loginField.setPreferredSize(new Dimension(100, 25));
@@ -117,12 +112,15 @@ public class BankApp extends JFrame {
     loginFrame.setVisible(true);
     enterButton.addActionListener(event ->
     {
-      if (loginField.getText().equals("admin") && passwordField.getText().equals("password"))
+      for (Admin admin : administrators)
       {
-        loginFrame.dispose();
-        initComponents();
-        setTextFields();
-        return;
+        if (loginField.getText().equals(admin.getLogin()) && passwordField.getText().equals(admin.getPassword()))
+        {
+          loginFrame.dispose();
+          initComponents(admin);
+          setTextFields();
+          return;
+        }
       }
 
       for (Customer customer : loginInfo.values())
@@ -135,20 +133,16 @@ public class BankApp extends JFrame {
         }
       }
 
-
       System.out.println("Could not find customer!");
-
-
     });
-
   }
 
   /**
    * Initializes the components for the banking application.
    * This is the GUI. The rest takes care of everything.
    */
-  private void initComponents() {
-    setTitle("Banking Application");
+  private void initComponents(Admin admin) {
+    setTitle("Welcome, " + admin.getName() + ".");
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setLocationByPlatform(true);
 
@@ -189,7 +183,6 @@ public class BankApp extends JFrame {
     loginField = new JTextField();
     passwordField = new JTextField();
 
-
     textFields.add(firstNameField);
     textFields.add(lastNameField);
     textFields.add(addressField);
@@ -202,7 +195,6 @@ public class BankApp extends JFrame {
     textFields.add(checkingAccountNumberField);
     textFields.add(loginField);
     textFields.add(passwordField);
-
 
     balanceField.setEditable(false);
     calculatedInterestField.setEditable(false);
@@ -355,7 +347,6 @@ public class BankApp extends JFrame {
     add(sizePanel, BorderLayout.NORTH);
     add(interest, BorderLayout.SOUTH);
     add(panel, BorderLayout.CENTER);
-    //add(buttonPanel, BorderLayout.NORTH);
     //Pack the frame to set its size
     pack();
     setVisible(true);
@@ -544,7 +535,6 @@ public class BankApp extends JFrame {
     }
     if (!isSavings)
     {
-
       int oldBalance = data.get(count).getCheckingAccBalance();
       data.get(count).subCheckingAccountBalance(Integer.parseInt(withdrawDepositField.getText()));
       balanceField.setText(data.get(count).getCheckingAccBalance() + "");
@@ -983,7 +973,6 @@ public class BankApp extends JFrame {
     JFrame transactionHistoryFrame = new JFrame();
     JPanel tmpPanel = new JPanel();
 
-
     for (String history : transactions)
     {
       JFormattedTextField transactionHistory = new JFormattedTextField(history);
@@ -999,6 +988,10 @@ public class BankApp extends JFrame {
     transactionHistoryFrame.setVisible(true);
   }
 
+  /**
+   * Fills the Map object with customers' first names as the key
+   * and the associated Customer object as the value.
+   */
   private void fillMap()
   {
     for (Customer customer: data)
@@ -1014,60 +1007,229 @@ public class BankApp extends JFrame {
   private void onLoginButtonPressed(Customer customer)
   {
 
-
+    ButtonGroup radioButtonGroup = new ButtonGroup();
 
     JButton depositLocalButton = new JButton("Deposit");
     JButton withdrawLocalButton = new JButton("Withdraw");
     JButton openCheckingAccountLocalButton = new JButton("Open Checking Account");
     JButton openSavingsAccountLocalButton = new JButton("Open Savings Account");
-
-
+    JButton viewSavingsAccountLocalButton = new JButton("View Savings Accounts");
+    JButton viewCheckingAccountLocalButton = new JButton("View Checking Accounts");
+    JButton logoutButton = new JButton("Logout");
 
     JTextField balanceLocalField = new JTextField();
-    balanceLocalField.setPreferredSize(new Dimension(100, 25));
+    balanceLocalField.setPreferredSize(new Dimension(100,25));
     balanceLocalField.setEditable(false);
     JTextField withdrawDepositLocalField = new JTextField();
     withdrawDepositLocalField.setPreferredSize(new Dimension(100, 25));
-
-    JPanel tmpPanel = new JPanel();
-    tmpPanel.setLayout(new GridBagLayout());
-
-
-    tmpPanel.add(depositLocalButton, getConstraints(3, 4));
-    tmpPanel.add(withdrawLocalButton,getConstraints(3,3));
-    tmpPanel.add(new JLabel("Balance"), getConstraints(1, 3));
-    tmpPanel.add(balanceLocalField, getConstraints(2,3));
-    tmpPanel.add(new JLabel("Withdraw/Deposit"), getConstraints(3, 7));
-    tmpPanel.add(withdrawDepositLocalField, getConstraints(2, 7));
-
-    JLabel welcome = new JLabel("Welcome, " + customer.getFirstName() + ".");
-
-
-    tmpPanel.add(welcome, getConstraints(1, 0));
-
-
-    tmpPanel.add(openSavingsAccountLocalButton, getConstraints(3, 5));
-    tmpPanel.add(openCheckingAccountLocalButton, getConstraints(3, 6));
+    JTextField savingsAccountLocalNumberField = new JTextField();
+    savingsAccountLocalNumberField.setPreferredSize(new Dimension(100, 25));
+    JTextField checkingAccountLocalNumberField = new JTextField();
+    checkingAccountLocalNumberField.setPreferredSize(new Dimension(100, 25));
 
     JRadioButton checkingAccountRadioButton = new JRadioButton("Checking");
     JRadioButton savingsAccountRadioButton = new JRadioButton("Savings");
-
     savingsAccountRadioButton.setSelected(true);
 
+    JLabel welcome = new JLabel("Welcome, " + customer.getFirstName() + ".");
+    JPanel tmpPanel = new JPanel();
+    tmpPanel.setLayout(new GridBagLayout());
 
+    JFrame customerFrame = new JFrame();
+    customerFrame.setResizable(true);
+
+    tmpPanel.add(new JLabel("Balance"), getConstraints(0, 3));
+    tmpPanel.add(balanceLocalField, getConstraints(1,3));
+    tmpPanel.add(new JLabel("Withdraw/Deposit"), getConstraints(0, 2));
+    tmpPanel.add(withdrawDepositLocalField, getConstraints(1, 2));
+    tmpPanel.add(new JLabel("Savings account number"), getConstraints(0,4));
+    tmpPanel.add(savingsAccountLocalNumberField, getConstraints(1,4));
+    tmpPanel.add(new JLabel("Checking account number"), getConstraints(0, 5));
+    tmpPanel.add(checkingAccountLocalNumberField, getConstraints(1,5));
+
+    tmpPanel.add(depositLocalButton, getConstraints(3, 4));
+    tmpPanel.add(withdrawLocalButton,getConstraints(3,3));
+
+    tmpPanel.add(viewCheckingAccountLocalButton, getConstraints(3 ,2));
+    tmpPanel.add(viewSavingsAccountLocalButton, getConstraints(3, 1));
+
+
+
+    tmpPanel.add(welcome, getConstraints(1, 100));
+
+    tmpPanel.add(openSavingsAccountLocalButton);
+    tmpPanel.add(openCheckingAccountLocalButton);
+    tmpPanel.add(logoutButton, getConstraints(5, 10));
+
+
+    radioButtonGroup.add(checkingAccountRadioButton);
+    radioButtonGroup.add(savingsAccountRadioButton);
 
     tmpPanel.add(checkingAccountRadioButton, getConstraints(1, 1));
     tmpPanel.add(savingsAccountRadioButton, getConstraints(0, 1));
+    logoutButton.addActionListener(event ->
+    {
+      customerFrame.dispose();
+      startLoginPage();
+    });
+    viewSavingsAccountLocalButton.addActionListener(event -> viewSavingsAccountButtonClicked(customer));
+    viewCheckingAccountLocalButton.addActionListener(event -> viewCheckingAccountButtonClicked(customer));
+    openCheckingAccountLocalButton.addActionListener(event ->
+    {
+      for (int i = 0; i < customer.getCheckingAccounts().size(); i++)
+      {
+        if (checkingAccountLocalNumberField.getText().equals(customer.getCheckingAccounts().get(i).getAccountNumber()))
+        {
+          System.out.println("Checking already exists");
+          return;
+        }
+      }
+
+      customer.addCheckingAccount(new CheckingAccount(checkingAccountLocalNumberField.getText()));
+
+    });
 
 
-    JFrame customerFrame = new JFrame();
-    customerFrame.setPreferredSize(new Dimension(600, 600));
+    openSavingsAccountLocalButton.addActionListener(event ->
+    {
+      for (int i = 0; i < customer.getSavingsAccounts().size(); i++)
+      {
+        if (savingsAccountLocalNumberField.getText().equals(customer.getSavingsAccounts().get(i).getAccountNumber()))
+        {
+          System.out.println("Savings already exists");
+          return;
+        }
+      }
+
+      customer.addSavingsAccount(new SavingsAccount(savingsAccountLocalNumberField.getText()));
+    });
+
+
+    savingsAccountRadioButton.addActionListener(e -> isSavings = true);
+    checkingAccountRadioButton.addActionListener(e -> isSavings = false);
+
+    withdrawLocalButton.addActionListener(event ->
+    {
+      if (isSavings)
+      {
+
+        for (int i = 0; i < customer.getSavingsAccounts().size(); i++)
+        {
+          if (savingsAccountLocalNumberField.getText().equals(customer.getSavingsAccounts().get(i).getAccountNumber()))
+          {
+            customer.getSavingsAccounts().get(i).withdraw(Integer.parseInt(withdrawDepositLocalField.getText()));
+            balanceLocalField.setText(customer.getSavingsAccounts().get(i).getAccountMoney() + "");
+            return;
+          }
+        }
+        customer.subSavingsAccBalance(Integer.parseInt(withdrawDepositLocalField.getText()));
+        balanceLocalField.setText(customer.getSavingsAccBalance() + "");
+      }
+      else
+      {
+        for (int i = 0; i < customer.getCheckingAccounts().size(); i++)
+        {
+          if (checkingAccountLocalNumberField.getText().equals(customer.getCheckingAccounts().get(i).getAccountNumber()))
+          {
+            customer.getCheckingAccounts().get(i).withdraw(Integer.parseInt(withdrawDepositLocalField.getText()));
+            balanceLocalField.setText(customer.getCheckingAccounts().get(i).getAccountMoney() + "");
+            return;
+          }
+        }
+        customer.subCheckingAccountBalance(Integer.parseInt(withdrawDepositLocalField.getText()));
+        balanceLocalField.setText(customer.getCheckingAccBalance() + "");
+      }
+
+    });
+
+
+    depositLocalButton.addActionListener(event ->
+    {
+
+      if (isSavings)
+      {
+
+        for (int i = 0; i < customer.getSavingsAccounts().size(); i++)
+        {
+          if (savingsAccountLocalNumberField.getText().equals(customer.getSavingsAccounts().get(i).getAccountNumber()))
+          {
+            customer.getSavingsAccounts().get(i).deposit(Integer.parseInt(withdrawDepositLocalField.getText()));
+            balanceLocalField.setText(customer.getSavingsAccounts().get(i).getAccountMoney() + "");
+            return;
+          }
+        }
+        customer.addSavingsAccBalance(Integer.parseInt(withdrawDepositLocalField.getText()));
+        balanceLocalField.setText(customer.getSavingsAccBalance() + "");
+      }
+      else
+      {
+        for (int i = 0; i < customer.getCheckingAccounts().size(); i++)
+        {
+          if (checkingAccountLocalNumberField.getText().equals(customer.getCheckingAccounts().get(i).getAccountNumber()))
+          {
+            customer.getCheckingAccounts().get(i).deposit(Integer.parseInt(withdrawDepositLocalField.getText()));
+            balanceLocalField.setText(customer.getCheckingAccounts().get(i).getAccountMoney() + "");
+            return;
+          }
+        }
+        customer.addCheckingAccBalance(Integer.parseInt(withdrawDepositLocalField.getText()));
+        balanceLocalField.setText(customer.getCheckingAccBalance() + "");
+
+      }
+
+    });
+
+    customerFrame.setPreferredSize(new Dimension(800, 800));
     customerFrame.add(tmpPanel);
     customerFrame.pack();
     customerFrame.setVisible(true);
 
   }
 
+  /**
+   * Views the checking accounts for the specific customer.
+   * @param customer the customers checking accounts to be views.
+   */
+  private void viewCheckingAccountButtonClicked(Customer customer)
+  {
+    JFrame jframe = new JFrame("Checking Accounts for customer " + customer.getFullName());
+    JPanel tmpPanel = new JPanel();
+    for (int i = 0; i < customer.getCheckingAccounts().size(); i++)
+    {
+      JTextField tmp = new JTextField("Checking Account Number " + customer.getCheckingAccounts().get(i).getAccountNumber()
+              + " with $" + customer.getCheckingAccounts().get(i).getAccountMoney());
+      tmp.setEditable(false);
+      tmpPanel.add(tmp);
+    }
+
+    jframe.setPreferredSize(new Dimension(500,500));
+    jframe.add(tmpPanel);
+    jframe.pack();
+    jframe.setVisible(true);
+  }
+
+  /**
+   * Views the savings accounts for the specific customer.
+   * @param customer the customer to be viewed.
+   */
+  private void viewSavingsAccountButtonClicked(Customer customer)
+  {
+
+    JFrame jframe = new JFrame("Savings Accounts for customer " + customer.getFullName());
+    JPanel tmpPanel = new JPanel();
+    for (int i = 0; i < customer.getSavingsAccounts().size(); i++)
+    {
+      JTextField tmp = new JTextField("Savings Account Number " + customer.getSavingsAccounts().get(i).getAccountNumber()
+              + " with $" + customer.getSavingsAccounts().get(i).getAccountMoney());
+      tmp.setEditable(false);
+      tmpPanel.add(tmp);
+    }
+
+    jframe.setPreferredSize(new Dimension(500,500));
+    jframe.add(tmpPanel);
+    jframe.pack();
+    jframe.setVisible(true);
+  }
 }
 
     

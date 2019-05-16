@@ -1,4 +1,11 @@
 import java.util.*;
+
+/**
+ * Class that encapsulates a Customer object.
+ *
+ * @author Victor Velea
+ * @version 5/15
+ */
 public class Customer
 {
   private String fName;
@@ -23,6 +30,8 @@ public class Customer
    * @param pNumber The phone number of the Customer.
    * @param savingsAcc The savings account of the Customer.
    * @param checkAcc The checking account of the Customer.
+   * @param login the login of the associated Customer.
+   * @param password the password of the associated Customer.
    */
   public Customer(String fName, String lName, String address, String pNumber, SavingsAccount savingsAcc, CheckingAccount checkAcc, String login, String password)
   {
@@ -42,7 +51,6 @@ public class Customer
       this.checkAcc = checkAcc;
       savingsAccounts = new ArrayList<>();
       checkingAccounts = new ArrayList<>();
-
     }
   }
 
@@ -299,25 +307,5 @@ public class Customer
             + "Checking Account balance: " + checkAcc.getAccountMoney() + ".\n\n";
 
   }
-
-  /**
-   * This method returns an ArrayList of Customers to work with in the BankingApp.
-   * @return the ArrayList of Customer objects.
-   */
-  /*public static ArrayList<Customer> getCustomerDataArray()
-  {
-    ArrayList<Customer> data = new ArrayList<>();
-    Customer Victor = new Customer("Victor", "Doe", "4321 Hungry avenue","5439086612", new SavingsAccount("1102"), new CheckingAccount("1102"), "Victor", "Doe");
-    Customer Kaitlyn = new Customer("Kaitlyn", "Smith", "19002 Smile Drive","8005882300", new SavingsAccount("1103"), new CheckingAccount("1103"));
-    Customer Jessie = new Customer("Jessie", "Quincy", "302 drive apt 401","8715232213", new SavingsAccount("1104"),new CheckingAccount("1104"));
-    Customer Jie = new Customer("Jie", "Cheenus", "1234 dude guy drive",
-            "8887437", new SavingsAccount("1105"), new CheckingAccount("1105"));
-    data.add(Victor);
-    data.add(Kaitlyn);
-    data.add(Jessie);
-    data.add(Jie);
-
-    return data;
-  } */
 
 }

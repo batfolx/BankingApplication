@@ -2,6 +2,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Random;
 
+/**
+ * Abstract class for an Account.
+ *
+ * @author Victor Velea
+ * @version 5/15
+ */
 public abstract class Account
 {
   protected String accNum;
@@ -9,6 +15,10 @@ public abstract class Account
   protected int amountOfMoney;
 
 
+  /**
+   * Constructor for an Account object.
+   * @param accNum the account Number.
+   */
   public Account(String accNum)
   {
     this.accNum = accNum;
@@ -16,16 +26,29 @@ public abstract class Account
     interestRate = randomNum.nextDouble();
   }
 
+  /**
+   * Gets the account number associated with this account.
+   * @return the account number.
+   */
   public String getAccountNumber()
   {
     return accNum;
   }
 
+  /**
+   * Sets the account number.
+   * @param s the account number to be set.
+   */
   public void setAccNum(String s)
   {
     accNum = s;
   }
 
+  /**
+   * Deposits money into this account. Throws exceptions if parameter is wrong.
+   * precondition: money must be positive.
+   * @param money the money to be deposited.
+   */
   public void deposit(int money)
   {
 
@@ -61,6 +84,10 @@ public abstract class Account
 
   }
 
+  /**
+   * Withdraws money from this account. Throws exceptions if parameter is wrong.
+   * @param money the money to be deposited.
+   */
   public void withdraw(int money)
   {
     try
@@ -82,22 +109,38 @@ public abstract class Account
 
   }
 
+  /**
+   * Gets the account money.
+   * @return the account money.
+   */
   public int getAccountMoney()
   {
     return amountOfMoney;
   }
 
+  /**
+   * Calculates the interest rate associated with this account.
+   * @return the calculated interest rate.
+   */
   public double calculateInterest()
   {
     double interest;
     interest = amountOfMoney * interestRate;
     return interest;
   }
+
+  /**
+   * Gets the interest rate.
+   * @return the interest rate.
+   */
   public double getInterestRate()
   {
     return interestRate;
   }
 
+  /**
+   * Nested class for throwing an exception for the deposit and withdraw methods.
+   */
   protected class InsufficientFundsException extends Exception
   {
     public InsufficientFundsException() {}
@@ -109,6 +152,9 @@ public abstract class Account
 
   }
 
+  /**
+   * Nested class for throwing an exception for the deposit and withdraw methods.
+   */
   protected class NegativeAmountException extends Exception
   {
 

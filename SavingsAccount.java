@@ -1,11 +1,17 @@
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Subclass of the Account class. Has different functionality in terms of withdrawing money.
+ *
+ * @author Victor Velea
+ * @version 5/15
+ */
 public class SavingsAccount extends Account
 {
 
   /**
-   * Subclass of the Account class. Constructor for a SavingsAccount.
+   *  Constructor for a SavingsAccount.
    * @param accNum the account number.
    */
   public SavingsAccount(String accNum)
