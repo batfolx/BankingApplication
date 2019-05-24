@@ -34,6 +34,7 @@ public class MySQLConnection
     }
     catch (Exception ig) {
       ig.printStackTrace();
+      ig.printStackTrace();
     }
   }
 }
