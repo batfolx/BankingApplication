@@ -867,7 +867,7 @@ public class BankApp extends JFrame {
 
     try
     {
-      reader = new BufferedReader(new FileReader("C:\\Users\\Victor\\IdeaProjects\\BankingApp\\customers_data.txt"));
+      reader = new BufferedReader(new FileReader("customers_data.txt"));
 
       String line = reader.readLine();
 
