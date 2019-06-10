@@ -42,6 +42,7 @@ public class BankApp extends JFrame {
   private JButton viewSavingsAccountButton;
   private JButton viewCheckingAccountButton;
   private JButton transactionButton;
+  private JButton logoutButton;
 
   private JRadioButton savingsRadioButton;
   private JRadioButton checkingRadioButton;
@@ -237,6 +238,7 @@ public class BankApp extends JFrame {
     viewCheckingAccountButton = new JButton("View Checking Accounts");
     viewSavingsAccountButton = new JButton("View Savings Account");
     transactionButton = new JButton("View Transaction History");
+    logoutButton = new JButton("Logout");
 
     // adds all the buttons to the List of buttons
     // for visual purposes
@@ -256,6 +258,7 @@ public class BankApp extends JFrame {
     buttons.add(viewCheckingAccountButton);
     buttons.add(viewSavingsAccountButton);
     buttons.add(transactionButton);
+    buttons.add(logoutButton);
 
 
     //create a panel that uses the GridBagLayout manager with right Alignment
@@ -280,6 +283,7 @@ public class BankApp extends JFrame {
     panel.add(openCheckingAccountButton, getConstraints(3,4));
     panel.add(openSavingsAccountButton, getConstraints(3, 5));
     panel.add(transactionButton, getConstraints(5, 5));
+    panel.add(logoutButton, getConstraints(6,6));
 
     //add action listeners to both buttons
     searchCustomerButton.addActionListener(e -> searchCustomerButtonClicked());
@@ -299,6 +303,11 @@ public class BankApp extends JFrame {
     depositButton.addActionListener(e -> depositIntoSpecifiedCheckingAccountButtonClicked());
     depositButton.addActionListener(e -> depositIntoSpecifiedSavingsAccountButtonClicked());
     loadCustomersButton.addActionListener(e -> loadCustomersButtonClicked());
+    logoutButton.addActionListener(event ->
+            {
+              startLoginPage();
+              dispose();
+            });
     transactionButton.addActionListener(e -> transactionButtonClicked());
 
     for (JButton button : buttons)
@@ -996,6 +1005,7 @@ public class BankApp extends JFrame {
   {
     for (Customer customer: data)
     {
+      System.out.println(customer.getFullName());
       loginInfo.put(customer.getFirstName(), customer);
     }
   }
@@ -1070,6 +1080,7 @@ public class BankApp extends JFrame {
     logoutButton.addActionListener(event ->
     {
       customerFrame.dispose();
+
       startLoginPage();
     });
     viewSavingsAccountLocalButton.addActionListener(event -> viewSavingsAccountButtonClicked(customer));
